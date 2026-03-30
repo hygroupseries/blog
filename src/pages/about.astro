@@ -1,0 +1,126 @@
+---
+/**
+ * About Page — /about
+ * ────────────────────
+ * Personal introduction page.
+ * Edit the content below to reflect your actual background,
+ * tech focus, and contact information.
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import { SITE } from '../consts/site';
+---
+
+<BaseLayout
+  title="About"
+  description={`关于 ${SITE.name} — 技术方向、写作动机与联系方式。`}
+>
+  <Container class="py-12">
+
+    <!-- ─── Page header ──────────────────────────────────────────────────── -->
+    <header class="mb-10 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        About
+      </h1>
+    </header>
+
+    <!-- ─── Content ─────────────────────────────────────────────────────── -->
+    <!--
+      This section is intentionally written as plain Astro/HTML rather than
+      a Markdown file so it stays easy to customise structurally.
+      Swap it for a Markdown-rendered content collection entry if you prefer.
+    -->
+    <div
+      class="prose prose-zinc dark:prose-invert max-w-none
+             prose-a:text-cyan-600 dark:prose-a:text-cyan-400
+             prose-a:no-underline hover:prose-a:underline
+             prose-headings:tracking-tight
+             prose-code:font-mono"
+    >
+
+      <h2>你好 👋 by hygroupseries</h2>
+
+      <p>
+        我是 <strong>hygroupseries</strong>。这是一个记录技术思考、工程实践和个人笔记的地方。
+        文章以中文为主，偶尔也会写英文内容。
+      </p>
+
+      <p>
+        <!-- TODO: 替换为你的实际个人介绍 -->
+        目前专注于 AI系统设计，复杂度工程，软件工程
+        对 [AI的未来] 保持持续关注。
+        工作之外喜欢 打游戏 和 装机。
+      </p>
+
+      <h2>写作动机</h2>
+
+      <p>
+        写作对我来说是一种思考方式。把某个问题写清楚，意味着真正理解了它。
+        这里的文章大多是我在解决实际问题时的记录和总结，也包括一些读书笔记和技术观察。
+      </p>
+
+      <p>
+        我不追求发文频率，只在有话可说时才写。每篇文章尽量做到结论明确、例子真实、有判断、有证据。
+      </p>
+
+      <h2>技术方向</h2>
+
+      <ul>
+        <li>Claude Code && Codex</li>
+        <li>Linux</li>
+        <li>Golang</li>
+        <li>Python</li>
+      </ul>
+
+      <h2>联系方式</h2>
+
+      <p>如果你有问题、想法或合作意向，欢迎通过以下方式联系我：</p>
+
+      <ul>
+        {SITE.github && (
+          <li>
+            GitHub：
+            <a href={SITE.github} target="_blank" rel="noopener noreferrer">
+              {SITE.github.replace('https://', '')}
+            </a>
+          </li>
+        )}
+        {SITE.twitter && (
+          <li>
+            Twitter / X：
+            <a href={SITE.twitter} target="_blank" rel="noopener noreferrer">
+              @{SITE.twitter.split('/').pop()}
+            </a>
+          </li>
+        )}
+        {SITE.email && (
+          <li>
+            Email：
+            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+          </li>
+        )}
+      </ul>
+
+      <p>
+        也欢迎通过文章下方的评论区（即将上线）留言交流。
+      </p>
+
+      <hr />
+
+      <p class="text-sm text-zinc-500 dark:text-zinc-400 not-italic">
+        本博客使用
+        <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>
+        构建，部署在
+        <a href="https://pages.cloudflare.com" target="_blank" rel="noopener noreferrer">Cloudflare Pages</a>
+        上，源码托管于
+        {SITE.github
+          ? <a href={SITE.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+          : 'GitHub'
+        }。
+      </p>
+
+    </div>
+
+  </Container>
+</BaseLayout>

@@ -1,0 +1,88 @@
+---
+/**
+ * Tags Index Page — /tags
+ * ───────────────────────
+ * Shows every tag used across all published posts,
+ * sorted by post count descending (most-used first).
+ *
+ * Each tag links to /tags/<slug> which lists posts for that tag.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import { getAllPosts } from '../../utils/content';
+import { getTagCounts, tagToSlug } from '../../utils/tags';
+
+const posts    = await getAllPosts();
+const counts   = getTagCounts(posts);   // Map<tag, count> sorted by count desc
+const tagCount = counts.size;
+---
+
+<BaseLayout
+  title="Tags"
+  description={`按标签浏览文章，共 ${tagCount} 个标签。`}
+>
+  <Container class="py-12">
+
+    <!-- ─── Page header ──────────────────────────────────────────────────── -->
+    <header class="mb-10 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        Tags
+      </h1>
+      {tagCount > 0 && (
+        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          共 {tagCount} 个标签
+        </p>
+      )}
+    </header>
+
+    <!-- ─── Tag grid ─────────────────────────────────────────────────────── -->
+    {tagCount === 0 ? (
+      <p class="py-16 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+        还没有任何标签。
+      </p>
+    ) : (
+      <ul
+        class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        aria-label="标签列表"
+      >
+        {[...counts.entries()].map(([tag, count]) => (
+          <li>
+            <a
+              href={`/tags/${tagToSlug(tag)}`}
+              class="group flex items-center justify-between rounded-lg
+                     border border-zinc-200 dark:border-zinc-800
+                     px-4 py-3 no-underline transition-colors
+                     hover:border-cyan-400 dark:hover:border-cyan-600
+                     hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            >
+              {/* Tag name */}
+              <span
+                class="text-sm font-medium text-zinc-800 dark:text-zinc-200
+                       group-hover:text-cyan-600 dark:group-hover:text-cyan-400
+                       transition-colors"
+              >
+                {tag}
+              </span>
+
+              {/* Post count badge */}
+              <span
+                class="ml-3 inline-flex h-5 min-w-5 items-center justify-center
+                       rounded-full px-1.5
+                       bg-zinc-100 dark:bg-zinc-800
+                       text-xs font-medium text-zinc-500 dark:text-zinc-400
+                       group-hover:bg-cyan-100 dark:group-hover:bg-cyan-900/30
+                       group-hover:text-cyan-600 dark:group-hover:text-cyan-400
+                       transition-colors tabular-nums"
+                aria-label={`${count} 篇文章`}
+              >
+                {count}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+  </Container>
+</BaseLayout>

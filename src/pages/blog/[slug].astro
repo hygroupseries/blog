@@ -1,0 +1,63 @@
+---
+/**
+ * Blog Post Detail Page — /blog/[slug]
+ * ─────────────────────────────────────
+ * Dynamically generates one static page per published blog post.
+ *
+ * Route
+ *   /blog/<post-id>   e.g. /blog/hello-world
+ *
+ * Data flow
+ *   1. getStaticPaths() → one route entry per published post
+ *   2. render(post)     → Content component + heading list for TOC
+ *   3. getAdjacentPosts → prev / next links at the bottom of the article
+ *
+ * Astro 6 Content Layer API notes
+ *   - Collections are configured in src/content.config.ts (not src/content/config.ts)
+ *   - `render()` is imported from 'astro:content' (not entry.render())
+ *   - post.id  is the file slug derived by the glob loader
+ *   - post.body contains the raw markdown source (used for reading time)
+ */
+
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getAdjacentPosts } from '../../utils/content';
+
+export async function getStaticPaths() {
+  // In production, exclude drafts; in development, include them for preview
+  const posts = await getCollection('blog', ({ data }) => {
+    return import.meta.env.PROD ? !data.draft : true;
+  });
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+// Astro infers the type from getStaticPaths — no manual Props type needed
+const { post } = Astro.props;
+
+// Render markdown/MDX → React-like Content component + extracted heading list
+const { Content, headings } = await render(post);
+
+// Fetch neighbour posts for the prev / next navigation block
+const { prev, next } = await getAdjacentPosts(post);
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  tags={post.data.tags}
+  toc={post.data.toc}
+  headings={headings}
+  heroImage={post.data.heroImage}
+  canonicalURL={post.data.canonicalURL}
+  prev={prev}
+  next={next}
+  body={post.body ?? ''}
+>
+  <Content />
+</PostLayout>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blog.qiaohaoyu.com/sitemap-index.xml

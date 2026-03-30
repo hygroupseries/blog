@@ -1,0 +1,142 @@
+---
+/**
+ * BaseLayout
+ * ──────────
+ * The root HTML shell used by every page on the site.
+ *
+ * Responsibilities
+ *   - Emits a valid HTML5 document with correct <head> metadata
+ *   - Imports global.css (Tailwind v4 + JetBrains Mono + Shiki themes)
+ *   - Provides SEO meta: <title>, <meta description>, canonical URL
+ *   - Provides Open Graph + Twitter Card meta for social sharing
+ *   - Links the RSS feed so browsers/readers can auto-discover it
+ *   - Renders <Header>, <slot />, and <Footer> in the correct order
+ *
+ * Props
+ *   title       — page-specific title; omit to fall back to SITE.title
+ *   description — page meta description; falls back to SITE.description
+ *   image       — absolute path to OG image (default: /og-default.png)
+ *   canonical   — explicit canonical URL string; auto-derived when omitted
+ *   article     — set true on post pages so og:type becomes "article"
+ *
+ * Usage
+ *   <BaseLayout title="About" description="Who I am and what I write about.">
+ *     <p>Page content goes here.</p>
+ *   </BaseLayout>
+ */
+
+import { SITE } from '../consts/site';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  article?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og-default.png',
+  canonical,
+  article = false,
+} = Astro.props;
+
+// <title> — "Post Title · Your Name" or just "Your Name's Blog"
+const pageTitle = title ? `${title} · ${SITE.name}` : SITE.title;
+
+// Canonical URL — use the explicit override, or derive from the current pathname
+const siteBase = Astro.site?.toString().replace(/\/$/, '') ?? SITE.url;
+const canonicalURL = canonical
+  ? new URL(canonical)
+  : new URL(Astro.url.pathname, siteBase);
+
+// Absolute OG image URL (must be absolute for social crawlers)
+const ogImage = new URL(image, siteBase).toString();
+---
+
+<!doctype html>
+<html lang={SITE.locale} class="scroll-smooth">
+  <head>
+    <!-- ─── Encoding & viewport ──────────────────────────────────────────── -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ─── Primary meta ────────────────────────────────────────────────── -->
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- ─── Open Graph ──────────────────────────────────────────────────── -->
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={pageTitle} />
+    <meta property="og:locale" content={SITE.locale.replace('-', '_')} />
+
+    <!-- ─── Twitter / X Card ────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {SITE.twitter && (
+      <meta
+        name="twitter:creator"
+        content={`@${SITE.twitter.split('/').pop()}`}
+      />
+    )}
+
+    <!-- ─── Favicon ─────────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ─── RSS auto-discovery ──────────────────────────────────────────── -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.title} RSS Feed`}
+      href="/rss.xml"
+    />
+
+    <!-- ─── Color scheme hint ───────────────────────────────────────────── -->
+    <!--
+      Tells the browser to support both light and dark modes.
+      Dark/light switching is handled entirely via CSS
+      (prefers-color-scheme media query in global.css + Tailwind dark: utilities).
+      No JavaScript flash of unstyled content.
+    -->
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- ─── Slot for page-level <head> additions ────────────────────────── -->
+    <!--
+      Pages can inject extra <link>, <meta>, or <script> tags here:
+        <BaseLayout>
+          <Fragment slot="head">
+            <meta name="robots" content="noindex" />
+          </Fragment>
+          …page body…
+        </BaseLayout>
+    -->
+    <slot name="head" />
+  </head>
+
+  <body
+    class="bg-white text-zinc-900 antialiased
+           dark:bg-zinc-950 dark:text-zinc-100"
+  >
+    <Header />
+
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,241 @@
+---
+/**
+ * PostLayout
+ * ──────────
+ * Layout wrapper for individual blog post pages.
+ *
+ * Responsibilities
+ *   - Passes SEO props to BaseLayout (title, description, OG image, canonical)
+ *   - Renders the article header: title, publish/update dates, reading time, tags
+ *   - Renders the optional inline Table of Contents (controlled by `toc` prop)
+ *   - Wraps the article body in Tailwind Typography `prose` classes
+ *   - Renders prev / next post navigation at the bottom
+ *
+ * Props
+ *   title        — article title
+ *   description  — article summary (used in SEO meta)
+ *   pubDate      — first publish date
+ *   updatedDate  — last update date (optional)
+ *   tags         — tag strings array
+ *   toc          — whether to render the TOC (from frontmatter)
+ *   headings     — heading objects returned by render()
+ *   heroImage    — optional OG / cover image path
+ *   canonicalURL — optional explicit canonical URL
+ *   prev         — previous post (older) for navigation
+ *   next         — next post (newer) for navigation
+ *   body         — raw markdown body string (used for reading time)
+ *
+ * Usage (in src/pages/blog/[slug].astro)
+ *   <PostLayout {...post.data} headings={headings} body={post.body ?? ''}
+ *               prev={prev} next={next}>
+ *     <Content />
+ *   </PostLayout>
+ */
+
+import BaseLayout from './BaseLayout.astro';
+import TOC from '../components/blog/TOC.astro';
+import TagList from '../components/blog/TagList.astro';
+import { formatDate, toISODate } from '../utils/date';
+import { getReadingTime } from '../utils/reading-time';
+import type { CollectionEntry } from 'astro:content';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags: string[];
+  toc: boolean;
+  headings: Heading[];
+  heroImage?: string;
+  canonicalURL?: string;
+  prev?: CollectionEntry<'blog'>;
+  next?: CollectionEntry<'blog'>;
+  body: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  tags,
+  toc,
+  headings,
+  heroImage,
+  canonicalURL,
+  prev,
+  next,
+  body,
+} = Astro.props;
+
+const readingTime = getReadingTime(body);
+
+// Show "updated" notice only when the update is on a different calendar day
+const showUpdated =
+  updatedDate &&
+  toISODate(updatedDate) !== toISODate(pubDate);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  canonical={canonicalURL}
+  article={true}
+>
+  <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
+
+    <!-- ─── Article header ──────────────────────────────────────────────── -->
+    <header class="mb-10">
+
+      <!-- Title -->
+      <h1
+        class="text-3xl font-bold leading-tight tracking-tight
+               text-zinc-900 dark:text-zinc-100
+               sm:text-4xl"
+      >
+        {title}
+      </h1>
+
+      <!-- Meta row: publish date · reading time · (updated) -->
+      <div
+        class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1
+               text-sm text-zinc-500 dark:text-zinc-400"
+      >
+        <time datetime={toISODate(pubDate)} title={`发布于 ${formatDate(pubDate)}`}>
+          {formatDate(pubDate)}
+        </time>
+
+        <span aria-hidden="true">·</span>
+
+        <span>{readingTime}阅读</span>
+
+        {showUpdated && (
+          <>
+            <span aria-hidden="true">·</span>
+            <span title={`最后更新于 ${formatDate(updatedDate!)}`}>
+              更新于&nbsp;
+              <time datetime={toISODate(updatedDate!)}>
+                {formatDate(updatedDate!)}
+              </time>
+            </span>
+          </>
+        )}
+      </div>
+
+      <!-- Tags -->
+      {tags.length > 0 && <TagList tags={tags} class="mt-4" />}
+
+      <!-- Divider -->
+      <hr class="mt-8 border-zinc-200 dark:border-zinc-800" />
+    </header>
+
+    <!-- ─── Table of Contents (optional, controlled by frontmatter) ──────── -->
+    {toc && headings.length > 1 && (
+      <TOC headings={headings} />
+    )}
+
+    <!-- ─── Article body ────────────────────────────────────────────────── -->
+    <!--
+      prose-zinc:      zinc-based colour palette for all prose elements
+      dark:prose-invert: inverts prose colours for dark mode
+      max-w-none:      let the parent Container control the width
+      prose-a:…        links use aqua/cyan accent instead of default blue
+      prose-headings:… tighten heading tracking for a cleaner look
+      prose-code:…     apply font-mono (JetBrains Mono via @theme) to inline code
+      prose-pre:p-0:   remove prose default padding so our Shiki shell controls it
+    -->
+    <article
+      class="prose prose-zinc dark:prose-invert max-w-none
+             prose-a:text-cyan-600 dark:prose-a:text-cyan-400
+             prose-a:no-underline prose-a:font-normal
+             hover:prose-a:underline
+             prose-headings:tracking-tight
+             prose-headings:text-zinc-900 dark:prose-headings:text-zinc-100
+             prose-code:font-mono prose-code:font-normal
+             prose-pre:p-0 prose-pre:bg-transparent prose-pre:rounded-none
+             prose-img:rounded-lg
+             prose-blockquote:border-cyan-400 dark:prose-blockquote:border-cyan-600
+             prose-hr:border-zinc-200 dark:prose-hr:border-zinc-800"
+    >
+      <slot />
+    </article>
+
+    <!-- ─── Post navigation ─────────────────────────────────────────────── -->
+    {(prev ?? next) && (
+      <nav
+        class="mt-16 grid grid-cols-1 gap-4 border-t border-zinc-200 dark:border-zinc-800 pt-8 sm:grid-cols-2"
+        aria-label="文章导航"
+      >
+
+        <!-- Newer post (prev in reading order = higher index = next published) -->
+        {prev ? (
+          <a
+            href={`/blog/${prev.id}`}
+            class="group flex flex-col gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800
+                   p-4 no-underline transition-colors
+                   hover:border-cyan-400 dark:hover:border-cyan-600
+                   hover:bg-zinc-50 dark:hover:bg-zinc-900"
+            aria-label={`上一篇：${prev.data.title}`}
+          >
+            <span class="text-xs text-zinc-400 dark:text-zinc-500 select-none">← 更新</span>
+            <span
+              class="text-sm font-medium text-zinc-800 dark:text-zinc-200
+                     group-hover:text-cyan-600 dark:group-hover:text-cyan-400
+                     transition-colors line-clamp-2"
+            >
+              {prev.data.title}
+            </span>
+          </a>
+        ) : (
+          <div aria-hidden="true" />
+        )}
+
+        <!-- Older post (next in reading order = lower index = published earlier) -->
+        {next ? (
+          <a
+            href={`/blog/${next.id}`}
+            class="group flex flex-col gap-1 rounded-lg border border-zinc-200 dark:border-zinc-800
+                   p-4 no-underline text-right transition-colors
+                   hover:border-cyan-400 dark:hover:border-cyan-600
+                   hover:bg-zinc-50 dark:hover:bg-zinc-900
+                   sm:col-start-2"
+            aria-label={`下一篇：${next.data.title}`}
+          >
+            <span class="text-xs text-zinc-400 dark:text-zinc-500 select-none">更早 →</span>
+            <span
+              class="text-sm font-medium text-zinc-800 dark:text-zinc-200
+                     group-hover:text-cyan-600 dark:group-hover:text-cyan-400
+                     transition-colors line-clamp-2"
+            >
+              {next.data.title}
+            </span>
+          </a>
+        ) : (
+          <div aria-hidden="true" />
+        )}
+
+      </nav>
+    )}
+
+    <!-- ─── Back to blog list ────────────────────────────────────────────── -->
+    <div class="mt-8 text-center">
+      <a
+        href="/blog"
+        class="text-sm text-zinc-400 dark:text-zinc-500
+               hover:text-cyan-600 dark:hover:text-cyan-400
+               transition-colors no-underline"
+      >
+        ← 所有文章
+      </a>
+    </div>
+
+  </div>
+</BaseLayout>

@@ -1,0 +1,73 @@
+---
+/**
+ * Footer
+ * ──────
+ * Site-wide footer. Minimal by design — the focus stays on content.
+ *
+ * Shows:
+ *   - Site name + copyright year (auto-updated)
+ *   - Optional GitHub / Twitter / RSS links
+ *   - "Built with Astro" attribution
+ */
+
+import { SITE } from '../../consts/site';
+
+const year = new Date().getFullYear();
+
+const socialLinks = [
+  SITE.github  && { href: SITE.github,            label: 'GitHub',  external: true  },
+  SITE.twitter && { href: SITE.twitter,            label: 'Twitter', external: true  },
+  {               href: '/rss.xml',                label: 'RSS',     external: false },
+].filter(Boolean) as { href: string; label: string; external: boolean }[];
+---
+
+<footer class="mt-16 border-t border-zinc-200 dark:border-zinc-800">
+  <div class="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-8
+              sm:flex-row sm:justify-between sm:px-6 lg:px-8">
+
+    {/* Copyright */}
+    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+      &copy; {year}
+      <a
+        href="/"
+        class="font-medium text-zinc-700 dark:text-zinc-300
+               hover:text-cyan-600 dark:hover:text-cyan-400
+               transition-colors no-underline"
+      >
+        {SITE.name}
+      </a>
+      &nbsp;·&nbsp;
+      <a
+        href="https://astro.build"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors no-underline"
+      >
+        Built with Astro
+      </a>
+    </p>
+
+    {/* Social / RSS links */}
+    {socialLinks.length > 0 && (
+      <nav aria-label="外部链接">
+        <ul class="flex items-center gap-4">
+          {socialLinks.map(({ href, label, external }) => (
+            <li>
+              <a
+                href={href}
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noopener noreferrer' : undefined}
+                class="text-sm text-zinc-500 dark:text-zinc-400
+                       hover:text-cyan-600 dark:hover:text-cyan-400
+                       transition-colors no-underline"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+  </div>
+</footer>

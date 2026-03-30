@@ -1,0 +1,95 @@
+---
+/**
+ * Tag Detail Page — /tags/[tag]
+ * ──────────────────────────────
+ * Lists all published posts that carry the given tag.
+ *
+ * Route
+ *   /tags/<slug>   e.g. /tags/typescript
+ *
+ * Slug ↔ tag mapping
+ *   Tags are slugified via tagToSlug() before being placed in the URL.
+ *   On this page we reverse the mapping with slugToTag() to recover the
+ *   original display name (preserving casing, e.g. "TypeScript").
+ *
+ * Static generation
+ *   getStaticPaths() emits one route for each unique tag found in the
+ *   published post collection.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import Container from '../../components/ui/Container.astro';
+import { getAllPosts } from '../../utils/content';
+import { getAllTags, tagToSlug, slugToTag } from '../../utils/tags';
+
+export async function getStaticPaths() {
+  const posts = await getAllPosts();
+  const tags  = getAllTags(posts);      // deduplicated, alphabetically sorted
+
+  return tags.map((tag) => ({
+    params: { tag: tagToSlug(tag) },   // URL slug  e.g. "typescript"
+    props:  { originalTag: tag },      // display name e.g. "TypeScript"
+  }));
+}
+
+const { tag: tagSlug } = Astro.params;
+const { originalTag }  = Astro.props;
+
+// Recover the display name if props aren't available (belt-and-suspenders)
+const allPosts   = await getAllPosts();
+const allTags    = getAllTags(allPosts);
+const displayTag = originalTag ?? slugToTag(tagSlug, allTags) ?? tagSlug;
+
+// Posts that carry this tag, already sorted newest-first by getAllPosts()
+const taggedPosts = allPosts.filter((post) =>
+  post.data.tags.includes(displayTag)
+);
+
+const postCount = taggedPosts.length;
+---
+
+<BaseLayout
+  title={`标签：${displayTag}`}
+  description={`标签 "${displayTag}" 下的所有文章，共 ${postCount} 篇。`}
+>
+  <Container class="py-12">
+
+    <!-- ─── Page header ──────────────────────────────────────────────────── -->
+    <header class="mb-10 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+
+      <!-- Back link -->
+      <a
+        href="/tags"
+        class="mb-4 inline-block text-sm text-zinc-400 dark:text-zinc-500
+               hover:text-cyan-600 dark:hover:text-cyan-400
+               transition-colors no-underline"
+      >
+        ← 所有标签
+      </a>
+
+      <div class="flex flex-wrap items-baseline gap-3">
+        <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          {displayTag}
+        </h1>
+        <span class="text-sm text-zinc-500 dark:text-zinc-400">
+          {postCount} 篇文章
+        </span>
+      </div>
+    </header>
+
+    <!-- ─── Post list ────────────────────────────────────────────────────── -->
+    {postCount === 0 ? (
+      <p class="py-16 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+        该标签下暂无文章。
+      </p>
+    ) : (
+      <div>
+        {taggedPosts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    )}
+
+  </Container>
+</BaseLayout>

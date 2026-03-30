@@ -1,0 +1,33 @@
+# Build output
+dist/
+.output/
+
+# Dependencies
+node_modules/
+
+# Astro cache & generated types
+.astro/
+
+# Environment files — never commit secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Pagefind index (generated at build time)
+public/pagefind/

@@ -1,0 +1,49 @@
+---
+/**
+ * TagList
+ * ───────
+ * Renders a row of tag badges for a blog post.
+ *
+ * Props
+ *   tags  — array of tag strings from post frontmatter
+ *   class — optional extra classes on the wrapper
+ *
+ * Usage
+ *   <TagList tags={post.data.tags} />
+ *   <TagList tags={post.data.tags} class="mt-4" />
+ */
+
+interface Props {
+  tags: string[];
+  class?: string;
+}
+
+const { tags, class: className = '' } = Astro.props;
+
+import { tagToSlug } from '../../utils/tags';
+---
+
+{
+  tags.length > 0 && (
+    <ul
+      class:list={['flex flex-wrap gap-2', className]}
+      aria-label="文章标签"
+    >
+      {tags.map((tag) => (
+        <li>
+          <a
+            href={`/tags/${tagToSlug(tag)}`}
+            class="inline-block rounded px-2 py-0.5 text-xs font-medium
+                   bg-zinc-100 text-zinc-700
+                   hover:bg-zinc-200 hover:text-zinc-900
+                   dark:bg-zinc-800 dark:text-zinc-300
+                   dark:hover:bg-zinc-700 dark:hover:text-zinc-100
+                   transition-colors no-underline"
+          >
+            {tag}
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}

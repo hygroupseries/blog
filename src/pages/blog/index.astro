@@ -1,0 +1,83 @@
+---
+/**
+ * Blog Index Page — /blog
+ * ───────────────────────
+ * Lists all published posts in reverse-chronological order.
+ * Groups posts by year when there are enough to warrant it.
+ */
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import Container from '../../components/ui/Container.astro';
+import { getAllPosts } from '../../utils/content';
+
+const posts = await getAllPosts();
+
+// Group posts by publish year, newest year first
+const postsByYear = posts.reduce<Record<number, typeof posts>>((acc, post) => {
+  const year = post.data.pubDate.getFullYear();
+  (acc[year] ??= []).push(post);
+  return acc;
+}, {});
+
+const years = Object.keys(postsByYear)
+  .map(Number)
+  .sort((a, b) => b - a);
+
+const totalCount = posts.length;
+const groupByYear = years.length > 1;
+---
+
+<BaseLayout
+  title="Blog"
+  description={`所有文章，共 ${totalCount} 篇。`}
+>
+  <Container class="py-12">
+
+    <!-- ─── Page header ──────────────────────────────────────────────────── -->
+    <header class="mb-10 border-b border-zinc-200 dark:border-zinc-800 pb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        Blog
+      </h1>
+      {totalCount > 0 && (
+        <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+          共 {totalCount} 篇文章
+        </p>
+      )}
+    </header>
+
+    <!-- ─── Post list ────────────────────────────────────────────────────── -->
+    {totalCount === 0 ? (
+      <p class="py-16 text-center text-zinc-500 dark:text-zinc-400 text-sm">
+        还没有发布文章。敬请期待！
+      </p>
+    ) : groupByYear ? (
+      /* Grouped by year when the archive spans multiple years */
+      <div class="space-y-12">
+        {years.map((year) => (
+          <section>
+            <h2
+              class="mb-2 text-xs font-semibold uppercase tracking-widest
+                     text-zinc-400 dark:text-zinc-500 select-none"
+            >
+              {year}
+            </h2>
+            <div>
+              {postsByYear[year].map((post) => (
+                <PostCard post={post} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    ) : (
+      /* Flat list when all posts are within the same year */
+      <div>
+        {posts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    )}
+
+  </Container>
+</BaseLayout>

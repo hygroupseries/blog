@@ -1,0 +1,28 @@
+---
+/**
+ * Container
+ * ─────────
+ * A centred, max-width wrapper used on every page.
+ *
+ * Props
+ *   as    — the HTML element to render (default: "div")
+ *   class — additional Tailwind classes merged onto the wrapper
+ *
+ * Usage
+ *   <Container>…content…</Container>
+ *   <Container as="section" class="py-16">…</Container>
+ */
+
+// Astro reads this interface implicitly for prop typing — the "unused" warning is a false positive
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  class?: string;
+}
+
+const { as: Tag = 'div', class: className = '' } = Astro.props;
+---
+
+<Tag class:list={['mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8', className]}>
+  <slot />
+</Tag>

@@ -1,0 +1,188 @@
+/* ─── Fonts ──────────────────────────────────────────────────────────────────
+   Self-hosted via @fontsource — zero external CDN requests.
+   Only 400 (Regular), 700 (Bold), and 400-italic (comments) are loaded.
+   Each WOFF2 file is ~45 KB; Cloudflare CDN caches aggressively after first load.
+   ─────────────────────────────────────────────────────────────────────────── */
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/700.css';
+@import '@fontsource/jetbrains-mono/400-italic.css';
+
+/* ─── Tailwind v4 ────────────────────────────────────────────────────────────
+   Processed by @tailwindcss/vite — replaces the old @tailwind directives.
+   ─────────────────────────────────────────────────────────────────────────── */
+@import 'tailwindcss';
+
+/* ─── Plugins ────────────────────────────────────────────────────────────────
+   @tailwindcss/typography generates the `prose` class and its modifiers.
+   ─────────────────────────────────────────────────────────────────────────── */
+@plugin '@tailwindcss/typography';
+
+/* ─── Design tokens ──────────────────────────────────────────────────────────
+   Register JetBrains Mono as the mono font family.
+   --font-mono is used by Tailwind's `font-mono` utility and by prose code.
+   ─────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --font-mono:
+    'JetBrains Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas,
+    'DejaVu Sans Mono', monospace;
+}
+
+/* ─── Base layer ─────────────────────────────────────────────────────────────
+   Global element defaults — applied once, scoped under Tailwind's base layer.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* All code-family elements inherit JetBrains Mono and enable ligatures */
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    /* Enable programming ligatures (→  ⇒  !=  ===  <=  >=  //) */
+    font-feature-settings:
+      'liga' 1,
+      'calt' 1;
+    font-variant-ligatures: contextual;
+  }
+
+  /* Remove the default backtick quotes typography plugin wraps inline code in */
+  .prose code::before,
+  .prose code::after {
+    content: '' !important;
+  }
+
+  /* Page transition: no flash on color-scheme switch */
+  * {
+    transition-property: background-color, border-color, color;
+    transition-duration: 150ms;
+    transition-timing-function: ease;
+  }
+
+  /* Ensure <main> fills available vertical space */
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+  }
+}
+
+/* ─── Shiki dual-theme: light + dark code highlighting ───────────────────────
+   Astro's Shiki integration with `themes: { light, dark }` inlines CSS
+   variables (--shiki-light, --shiki-dark, etc.) directly on each <span>.
+   These rules activate the correct set based on OS color scheme.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Light theme is the default */
+pre.astro-code,
+pre.astro-code span {
+  color: var(--shiki-light, inherit);
+  background-color: var(--shiki-light-bg, inherit);
+  font-style: var(--shiki-light-font-style, inherit);
+  font-weight: var(--shiki-light-font-weight, inherit);
+  text-decoration: var(--shiki-light-text-decoration, inherit);
+}
+
+/* Dark theme when OS prefers dark */
+@media (prefers-color-scheme: dark) {
+  pre.astro-code,
+  pre.astro-code span {
+    color: var(--shiki-dark, inherit);
+    background-color: var(--shiki-dark-bg, inherit);
+    font-style: var(--shiki-dark-font-style, inherit);
+    font-weight: var(--shiki-dark-font-weight, inherit);
+    text-decoration: var(--shiki-dark-text-decoration, inherit);
+  }
+}
+
+/* ─── Code block chrome ──────────────────────────────────────────────────────
+   Visual shell for fenced code blocks rendered by Shiki.
+   Font is set here explicitly so code blocks outside of .prose also look right.
+   ─────────────────────────────────────────────────────────────────────────── */
+pre.astro-code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.7;
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+  border: 1px solid oklch(0% 0 0 / 0.07);
+}
+
+@media (prefers-color-scheme: dark) {
+  pre.astro-code {
+    border-color: oklch(100% 0 0 / 0.08);
+  }
+}
+
+/* ─── Heading anchor links ───────────────────────────────────────────────────
+   rehype-autolink-headings appends a <span class="heading-anchor">#</span>
+   to each heading. Hidden by default, visible on hover.
+   ─────────────────────────────────────────────────────────────────────────── */
+.heading-anchor {
+  display: inline-block;
+  margin-left: 0.4em;
+  opacity: 0;
+  text-decoration: none;
+  color: oklch(65% 0.15 195);
+  font-weight: 400;
+  font-size: 0.85em;
+  user-select: none;
+  transition: opacity 0.15s ease;
+}
+
+h2:hover .heading-anchor,
+h3:hover .heading-anchor,
+h4:hover .heading-anchor,
+h5:hover .heading-anchor,
+h6:hover .heading-anchor {
+  opacity: 1;
+}
+
+/* ─── Inline code in prose ───────────────────────────────────────────────────
+   @tailwindcss/typography adds styling for code inside articles.
+   We override the font, size, and add a subtle pill background.
+   ─────────────────────────────────────────────────────────────────────────── */
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  font-weight: 400;
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  background-color: oklch(95.5% 0 0);
+  color: oklch(22% 0 0);
+}
+
+@media (prefers-color-scheme: dark) {
+  .prose :not(pre) > code {
+    background-color: oklch(22% 0 0);
+    color: oklch(88% 0 0);
+  }
+}
+
+/* ─── Scrollbar styling (optional, WebKit only) ──────────────────────────── */
+pre.astro-code::-webkit-scrollbar {
+  height: 6px;
+}
+
+pre.astro-code::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+pre.astro-code::-webkit-scrollbar-thumb {
+  background: oklch(70% 0 0 / 0.4);
+  border-radius: 3px;
+}
+
+@media (prefers-color-scheme: dark) {
+  pre.astro-code::-webkit-scrollbar-thumb {
+    background: oklch(40% 0 0 / 0.6);
+  }
+}

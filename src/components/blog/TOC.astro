@@ -1,0 +1,73 @@
+---
+/**
+ * TOC — Table of Contents
+ * ───────────────────────
+ * Renders an inline table of contents from the headings extracted by
+ * Astro's `render()` function.  Only h2 and h3 are included by default;
+ * deeper levels are rarely useful in a sidebar / inline TOC.
+ *
+ * Props
+ *   headings — the `headings` array returned by `render(entry)`
+ *   class    — optional extra classes on the wrapper
+ *
+ * Usage (in PostLayout or [slug].astro)
+ *   import { render } from 'astro:content';
+ *   const { Content, headings } = await render(post);
+ *   ---
+ *   <TOC headings={headings} />
+ */
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  class?: string;
+}
+
+const { headings, class: className = '' } = Astro.props;
+
+// Only keep h2 and h3; strip any trailing anchor text injected by
+// rehype-autolink-headings (the bare "#" we append in astro.config.mjs).
+const filtered = headings
+  .filter((h) => h.depth === 2 || h.depth === 3)
+  .map((h) => ({ ...h, text: h.text.replace(/\s*#\s*$/, '').trim() }));
+---
+
+{
+  filtered.length > 1 && (
+    <nav
+      class:list={[
+        'not-prose rounded-lg border border-zinc-200 dark:border-zinc-800 p-5 my-8',
+        className,
+      ]}
+      aria-label="文章目录"
+    >
+      <p class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 select-none">
+        目录
+      </p>
+      <ol class="space-y-1">
+        {filtered.map((heading) => (
+          <li
+            class:list={[
+              'leading-snug',
+              heading.depth === 3 && 'ml-4',
+            ]}
+          >
+            <a
+              href={`#${heading.slug}`}
+              class="text-sm text-zinc-600 dark:text-zinc-400
+                     hover:text-cyan-600 dark:hover:text-cyan-400
+                     transition-colors no-underline"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
