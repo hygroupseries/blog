@@ -182,4 +182,4 @@ MVP 上线后，计划按以下优先级补充功能：
 
 如果你正在看这篇文章，说明部署成功了。
 
-欢迎通过 [GitHub](https://github.com/yourusername) 联系我，或者订阅 [RSS](/rss.xml) 保持关注。
+欢迎通过 [GitHub](https://github.com/hygroupseries) 联系我，或者订阅 [RSS](/rss.xml) 保持关注。
