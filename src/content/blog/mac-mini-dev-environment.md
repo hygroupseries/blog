@@ -1,12 +1,12 @@
 ---
-title: "Mac mini 一周使用体验：从开箱到开发环境落地"
-description: "这篇文章复盘我在 Mac mini 上一周的真实使用感受，并给出一套可复用的前端开发环境配置流程，包含 Homebrew、CodexApp、VS Code 和 Ghostty 的安装与基础优化。"
+title: "Mac mini 前端开发环境配置记录"
+description: "这篇文章记录我在 Mac mini 上搭建前端开发环境的过程，重点放在 Homebrew、Ghostty、VS Code、Node.js 和 pnpm 这条基础工具链。"
 pubDate: 2026-03-31
-updatedDate: 2026-03-31
-tags: ["Mac mini", "开发环境", "Homebrew", "VS Code", "Ghostty", "CodexApp"]
+updatedDate: 2026-05-28
+tags: ["Mac mini", "开发环境", "Homebrew", "VS Code", "Ghostty"]
 draft: false
 featured: true
-series: ""
+series: "开发环境"
 heroImage: ""
 canonicalURL: ""
 toc: true
@@ -15,9 +15,9 @@ lang: "zh-CN"
 
 ## 背景
 
-这次入手 Mac mini，核心目标很明确：一台安静、省电、可以稳定写代码的桌面机器。我的主要工作是前端开发和内容写作，日常工具集中在浏览器、编辑器、终端和少量 CLI 工具。
+这次配置 Mac mini 的目标很明确：搭一台安静、省电、稳定的桌面开发机。我的主要工作集中在前端开发、技术写作和少量命令行自动化，所以环境配置的重点不是装很多软件，而是把基础工具链整理得足够顺手。
 
-我希望在最短时间内把机器从“可用”变成“顺手”，所以这篇文章不聊跑分，只记录真实体验和一套可复制的环境配置流程。如果你刚买 Mac，或者准备把主力开发机迁到 macOS，这份清单可以直接照着走。
+这篇文章不聊跑分，只记录我从空系统到可投入开发的配置流程。如果你刚开始使用 macOS 做前端开发，也可以把它当作一份基础清单。
 
 ## 问题分析
 
@@ -27,13 +27,13 @@ lang: "zh-CN"
 - 终端、编辑器、AI 工具分散，快捷键和配置不一致。
 - 一开始随手装软件，后续迁移和重装成本会越来越高。
 
-如果不在第一天把工具链打好，后面每天都会被细碎问题打断。
+如果不在第一天把工具链打好，后面每天都会被细碎问题打断。开发环境的价值不在于“装得全”，而在于常用路径是否稳定、可复现、可迁移。
 
 ## 方案设计
 
-我的结论是：先用 Homebrew 管理安装入口，再按“终端 -> 编辑器 -> AI 工具”的顺序搭建。这样做的好处是安装可追踪、配置可复现、迁移成本低。
+我的结论是：先用 Homebrew 管理安装入口，再按“终端 -> 编辑器 -> 运行时 -> 项目工具”的顺序搭建。这样安装路径清楚，后续升级和迁移也更容易。
 
-### 方案一
+### 方案一：统一使用 Homebrew
 
 统一用 Homebrew 安装核心工具：
 
@@ -41,7 +41,7 @@ lang: "zh-CN"
 - 缺点：第一次配置需要理解 `brew`、`cask` 和环境变量。
 - 适用场景：希望长期维护开发环境的人。
 
-### 方案二
+### 方案二：使用官网安装包
 
 全部使用官网安装包：
 
@@ -49,11 +49,11 @@ lang: "zh-CN"
 - 缺点：版本管理分散，后续维护成本高。
 - 适用场景：临时使用或只装极少工具。
 
-我最终采用方案一，只有个别工具在 Homebrew 不稳定时才回退到官网安装。
+我最终采用方案一，只有个别工具在 Homebrew 不稳定或版本落后时再回退到官网安装包。
 
 ## 实现过程
 
-下面是我在 Mac mini 上实际执行的一套顺序。
+下面是我在 Mac mini 上采用的一套顺序。
 
 ### 第一步：安装 Homebrew
 
@@ -80,7 +80,7 @@ brew update
 
 ### 第二步：安装 Ghostty 作为主力终端
 
-我选择 Ghostty 的原因是启动快、渲染流畅、默认体验干净，适合高频命令行工作。
+我选择 Ghostty 的原因是启动快、渲染流畅、默认体验干净，适合高频命令行工作。终端不需要复杂，但要稳定、清晰、打开就能用。
 
 ```bash
 brew install --cask ghostty
@@ -114,17 +114,7 @@ code --version
 - 代码质量：ESLint、Prettier。
 - 工作流：GitHub Pull Requests、GitLens。
 
-### 第四步：安装 CodexApp
-
-CodexApp 我主要用于日常的代码生成、重构建议和命令辅助，和 VS Code 搭配能明显减少样板工作。
-
-```bash
-brew install --cask codex
-```
-
-如果你本地的 Homebrew 仓库里暂时没有这个 cask，就使用官网安装包；安装后记得完成登录，并在权限里允许它访问你需要的项目目录。
-
-### 第五步：安装基础开发工具链
+### 第四步：安装基础开发工具链
 
 虽然这篇重点是四个应用，但实际开发还需要最小工具链：
 
@@ -145,7 +135,7 @@ git --version
 # setup-dev.sh
 brew update
 brew install git node pnpm
-brew install --cask ghostty visual-studio-code codex
+brew install --cask ghostty visual-studio-code
 brew cleanup
 ```
 
@@ -161,4 +151,4 @@ brew cleanup
 
 ## 总结
 
-Mac mini 给我的第一印象是稳定、安静、专注，尤其适合长时间写代码。开发环境配置上，Homebrew 是整个流程的支点，先搭好它再装应用会顺很多。Ghostty 提供了更轻快的终端体验，VS Code 负责主编辑流，CodexApp 补齐智能辅助。按本文顺序执行，你可以在一小时内把新机器从“开机状态”推进到“可投入开发”的状态。后续如果要继续升级，建议从 dotfiles 自动化和项目模板化两条线开始。
+Mac mini 给我的第一印象是稳定、安静、专注，尤其适合长时间写代码。开发环境配置上，Homebrew 是整个流程的支点，先搭好它再装应用会顺很多。Ghostty 负责高频命令行，VS Code 负责主编辑流，Node.js 和 pnpm 支撑前端项目运行。后续如果要继续升级，我会优先从 dotfiles 自动化和项目模板化两条线开始。
