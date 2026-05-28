@@ -24,6 +24,14 @@ interface SiteConfig {
   locale: string;
   /** How many posts to show on the home page's "latest" section */
   homePostCount: number;
+  /** GitHub repo used by Giscus comments, formatted as owner/repo */
+  giscusRepo: string;
+  /** GitHub repository node ID from https://giscus.app */
+  giscusRepoId: string;
+  /** GitHub Discussions category name used by Giscus */
+  giscusCategory: string;
+  /** GitHub Discussions category node ID from https://giscus.app */
+  giscusCategoryId: string;
 }
 
 export const SITE: SiteConfig = {
@@ -37,4 +45,8 @@ export const SITE: SiteConfig = {
   twitter: '',
   locale: 'zh-CN',
   homePostCount: 5,
+  giscusRepo: 'hygroupseries/blog',
+  giscusRepoId: 'R_kgDOR0011w',
+  giscusCategory: 'Announcements',
+  giscusCategoryId: 'DIC_kwDOR001184C9_nK',
 };

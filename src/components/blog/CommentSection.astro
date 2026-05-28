@@ -1,0 +1,65 @@
+---
+/**
+ * Giscus comments for blog posts.
+ *
+ * Fill the Giscus IDs in src/consts/site.ts after enabling GitHub
+ * Discussions and installing the Giscus GitHub app for the repository.
+ */
+
+import { SITE } from '../../consts/site';
+
+const {
+  giscusRepo,
+  giscusRepoId,
+  giscusCategory,
+  giscusCategoryId,
+  locale,
+} = SITE;
+
+const enabled = Boolean(
+  giscusRepo &&
+    giscusRepoId &&
+    giscusCategory &&
+    giscusCategoryId,
+);
+---
+
+{
+  enabled ? (
+    <section
+      id="comments"
+      class="mt-16 border-t border-zinc-200 pt-10 dark:border-zinc-800"
+      aria-labelledby="comments-title"
+    >
+      <h2
+        id="comments-title"
+        class="mb-6 text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100"
+      >
+        评论
+      </h2>
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={giscusRepo}
+        data-repo-id={giscusRepoId}
+        data-category={giscusCategory}
+        data-category-id={giscusCategoryId}
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang={locale === 'zh-CN' ? 'zh-CN' : 'en'}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      />
+    </section>
+  ) : import.meta.env.DEV ? (
+    <section class="mt-16 rounded-lg border border-dashed border-zinc-300 p-5 text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+      Giscus 评论尚未配置。请在 <code>src/consts/site.ts</code> 中填写
+      <code>giscusRepoId</code> 和 <code>giscusCategoryId</code>。
+    </section>
+  ) : null
+}
