@@ -38,7 +38,7 @@ export const SITE: SiteConfig = {
   name: 'hygroupseries',
   title: "hygroupseries's Blog",
   description: '技术思考、工程实践与个人笔记。',
-  url: 'https://blog.qiaohaoyu.com',
+  url: 'https://blog.qiaohaoyu.tech',
   author: 'hygroupseries',
   email: '',
   github: 'https://github.com/hygroupseries',

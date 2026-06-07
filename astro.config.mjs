@@ -10,7 +10,7 @@ import remarkGfm from 'remark-gfm';
 // https://astro.build/config
 export default defineConfig({
   // Replace with your actual production domain
-  site: 'https://blog.qiaohaoyu.com',
+  site: 'https://blog.qiaohaoyu.tech',
 
   // Pure static output — no adapter needed for Cloudflare Pages
   output: 'static',

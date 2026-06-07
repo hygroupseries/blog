@@ -26,7 +26,7 @@
 | 搜索 | Pagefind **1.4.0**（第一轮增强） |
 | 评论 | Giscus 原生 script（零 React 依赖，第一轮增强） |
 | 部署 | Cloudflare Pages |
-| 域名 | blog.<yourdomain>，Cloudflare DNS CNAME 指向 pages.dev |
+| 域名 | blog.qiaohaoyu.tech，Cloudflare DNS CNAME 指向 pages.dev |
 | 统计 | Umami（第二阶段） |
 
 ---
@@ -111,8 +111,9 @@
 - [x] favicon（`public/favicon.svg`，SVG 格式，终端风格 `>_` 图标）
 - [x] `public/_headers`（安全响应头 + `/_astro/*` 长期缓存头）
 - [ ] **⚠️ 待操作**：修改 `src/consts/site.ts` 填写真实姓名、域名、GitHub 链接
-- [ ] **⚠️ 待操作**：修改 `astro.config.mjs` 将 `site` 改为真实生产域名
-- [ ] **⚠️ 待操作**：修改 `public/robots.txt` 中的 sitemap URL
+- [x] `astro.config.mjs` 的 `site` 已设置为 `https://blog.qiaohaoyu.tech`
+- [x] `src/consts/site.ts` 的站点 URL 已设置为 `https://blog.qiaohaoyu.tech`
+- [x] `public/robots.txt` 的 Sitemap URL 已设置为 `.tech` 域名
 - [ ] 初始化 Git 仓库并推送到 GitHub
 - [ ] 在 Cloudflare Pages 创建项目并连接 Git 仓库
 - [ ] 配置构建设置（pnpm build、dist、`NODE_VERSION=20`）
@@ -253,7 +254,7 @@
 name: '你的真实姓名或笔名',
 title: "你的名字's Blog",
 description: '一句话描述你的博客',
-url: 'https://blog.yourdomain.com',   // 与 astro.config.mjs site 字段保持一致
+url: 'https://blog.qiaohaoyu.tech',   // 与 astro.config.mjs site 字段保持一致
 author: '你的姓名',
 email: 'you@example.com',             // 不想显示则留空 ''
 github: 'https://github.com/你的用户名',
@@ -262,12 +263,12 @@ twitter: '',                          // 没有 Twitter 则留空 ''
 
 ### 2. 修改构建域名（`astro.config.mjs`）
 ```js
-site: 'https://blog.yourdomain.com',  // 替换 example.com
+site: 'https://blog.qiaohaoyu.tech',
 ```
 
 ### 3. 修改 robots.txt（`public/robots.txt`）
 ```
-Sitemap: https://blog.yourdomain.com/sitemap-index.xml
+Sitemap: https://blog.qiaohaoyu.tech/sitemap-index.xml
 ```
 
 ### 4. 本地预览
