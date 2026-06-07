@@ -17,19 +17,31 @@ import { SITE } from '../consts/site';
 import { getAllPosts, getFeaturedPosts } from '../utils/content';
 import { getTagsSortedByCount } from '../utils/tags';
 
-const allPosts     = await getAllPosts();
-const featured     = await getFeaturedPosts();
-const latest       = allPosts.slice(0, SITE.homePostCount);
-const tags         = getTagsSortedByCount(allPosts);
+const allPosts = await getAllPosts();
+const featured = await getFeaturedPosts();
+const latest = allPosts.slice(0, SITE.homePostCount);
+const tags = getTagsSortedByCount(allPosts);
 const showFeatured = featured.length > 0;
+const websiteStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE.title,
+  url: SITE.url,
+  description: SITE.description,
+  inLanguage: SITE.locale,
+  author: {
+    '@type': 'Person',
+    name: SITE.author,
+    url: SITE.github || SITE.url,
+  },
+};
 ---
 
-<BaseLayout>
+<BaseLayout structuredData={websiteStructuredData}>
   <Container>
-
     <!-- ─── Hero ─────────────────────────────────────────────────────────── -->
-    <section class="py-16 sm:py-20 border-b border-zinc-200 dark:border-zinc-800">
-      <h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+    <section class="border-b border-zinc-200 py-16 sm:py-20 dark:border-zinc-800">
+      <h1 class="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-100">
         {SITE.name}
       </h1>
 
@@ -41,88 +53,85 @@ const showFeatured = featured.length > 0;
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
           href="/blog"
-          class="inline-flex items-center rounded-md bg-zinc-900 dark:bg-zinc-100
-                 px-4 py-2 text-sm font-medium
-                 text-zinc-100 dark:text-zinc-900
-                 hover:bg-zinc-700 dark:hover:bg-zinc-300
-                 transition-colors no-underline"
+          class="inline-flex items-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-100 no-underline transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
         >
           所有文章
         </a>
-        {SITE.github && (
-          <a
-            href={SITE.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center text-sm font-medium
-                   text-zinc-500 dark:text-zinc-400
-                   hover:text-cyan-600 dark:hover:text-cyan-400
-                   transition-colors no-underline"
-          >
-            GitHub →
-          </a>
-        )}
+        {
+          SITE.github && (
+            <a
+              href={SITE.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center text-sm font-medium text-zinc-500 no-underline transition-colors hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400"
+            >
+              GitHub →
+            </a>
+          )
+        }
       </div>
     </section>
 
     <!-- ─── Featured Posts ───────────────────────────────────────────────── -->
-    {showFeatured && (
-      <section class="py-12 border-b border-zinc-200 dark:border-zinc-800">
-        <h2 class="text-xs font-semibold uppercase tracking-widest
-                   text-zinc-400 dark:text-zinc-500 mb-6 select-none">
-          精选文章
-        </h2>
+    {
+      showFeatured && (
+        <section class="border-b border-zinc-200 py-12 dark:border-zinc-800">
+          <h2 class="mb-6 text-xs font-semibold tracking-widest text-zinc-400 uppercase select-none dark:text-zinc-500">
+            精选文章
+          </h2>
 
-        <div>
-          {featured.map((post) => (
-            <PostCard post={post} />
-          ))}
-        </div>
-      </section>
-    )}
+          <div>
+            {featured.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <!-- ─── Latest Posts ─────────────────────────────────────────────────── -->
-    <section class="py-12 border-b border-zinc-200 dark:border-zinc-800">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xs font-semibold uppercase tracking-widest
-                   text-zinc-400 dark:text-zinc-500 select-none">
+    <section class="border-b border-zinc-200 py-12 dark:border-zinc-800">
+      <div class="mb-6 flex items-center justify-between">
+        <h2
+          class="text-xs font-semibold tracking-widest text-zinc-400 uppercase select-none dark:text-zinc-500"
+        >
           最新文章
         </h2>
-        {allPosts.length > SITE.homePostCount && (
-          <a
-            href="/blog"
-            class="text-sm text-zinc-500 dark:text-zinc-400
-                   hover:text-cyan-600 dark:hover:text-cyan-400
-                   transition-colors no-underline"
-          >
-            全部 {allPosts.length} 篇 →
-          </a>
-        )}
+        {
+          allPosts.length > SITE.homePostCount && (
+            <a
+              href="/blog"
+              class="text-sm text-zinc-500 no-underline transition-colors hover:text-cyan-600 dark:text-zinc-400 dark:hover:text-cyan-400"
+            >
+              全部 {allPosts.length} 篇 →
+            </a>
+          )
+        }
       </div>
 
-      {latest.length === 0 ? (
-        <p class="text-zinc-500 dark:text-zinc-400 text-sm py-8">
-          还没有发布文章。敬请期待！
-        </p>
-      ) : (
-        <div>
-          {latest.map((post) => (
-            <PostCard post={post} />
-          ))}
-        </div>
-      )}
+      {
+        latest.length === 0 ? (
+          <p class="py-8 text-sm text-zinc-500 dark:text-zinc-400">还没有发布文章。敬请期待！</p>
+        ) : (
+          <div>
+            {latest.map((post) => (
+              <PostCard post={post} />
+            ))}
+          </div>
+        )
+      }
     </section>
 
     <!-- ─── Tags overview ────────────────────────────────────────────────── -->
-    {tags.length > 0 && (
-      <section class="py-12">
-        <h2 class="text-xs font-semibold uppercase tracking-widest
-                   text-zinc-400 dark:text-zinc-500 mb-6 select-none">
-          标签
-        </h2>
-        <TagList tags={tags} />
-      </section>
-    )}
-
+    {
+      tags.length > 0 && (
+        <section class="py-12">
+          <h2 class="mb-6 text-xs font-semibold tracking-widest text-zinc-400 uppercase select-none dark:text-zinc-500">
+            标签
+          </h2>
+          <TagList tags={tags} />
+        </section>
+      )
+    }
   </Container>
 </BaseLayout>

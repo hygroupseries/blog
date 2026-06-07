@@ -1,16 +1,14 @@
 ---
-title: "Mac mini 前端开发环境配置记录"
-description: "这篇文章记录我在 Mac mini 上搭建前端开发环境的过程，重点放在 Homebrew、Ghostty、VS Code、Node.js 和 pnpm 这条基础工具链。"
+title: 'Mac mini 前端开发环境配置记录'
+description: '这篇文章记录我在 Mac mini 上搭建前端开发环境的过程，重点放在 Homebrew、Ghostty、VS Code、Node.js 和 pnpm 这条基础工具链。'
 pubDate: 2026-03-31
 updatedDate: 2026-05-28
-tags: ["Mac mini", "开发环境", "Homebrew", "VS Code", "Ghostty"]
+tags: ['Mac mini', '开发环境', 'Homebrew', 'VS Code', 'Ghostty']
 draft: false
 featured: true
-series: "开发环境"
-heroImage: ""
-canonicalURL: ""
+series: '开发环境'
 toc: true
-lang: "zh-CN"
+lang: 'zh-CN'
 ---
 
 ## 背景

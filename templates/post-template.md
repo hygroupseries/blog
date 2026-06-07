@@ -7,8 +7,6 @@ tags: ["Frontend", "Astro"]
 draft: true
 featured: false
 series: ""
-heroImage: ""
-canonicalURL: ""
 toc: true
 lang: "zh-CN"
 ---

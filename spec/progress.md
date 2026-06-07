@@ -39,6 +39,7 @@
 | `spec/01_dependencies.md` | ✅ 完成 | 更新后的依赖清单（注：实际使用 Tailwind v4 + @tailwindcss/vite，与 spec/01 中的 @astrojs/tailwind 方案不同） |
 | `spec/02_font_setup.md` | ✅ 完成 | JetBrains Mono 字体配置方案（实现与 spec 一致，改用 @theme 注册） |
 | `spec/03_cloudflare_setup.md` | ✅ 完成 | Cloudflare Pages 部署与域名配置 |
+| `spec/04_seo.md` | ✅ 完成 | 技术 SEO 配置与发布检查 |
 | `spec/progress.md` | ✅ 本文件 | 进度追踪 |
 
 原始规划文件（参考，不再修改）：
@@ -114,6 +115,11 @@
 - [x] `astro.config.mjs` 的 `site` 已设置为 `https://blog.qiaohaoyu.tech`
 - [x] `src/consts/site.ts` 的站点 URL 已设置为 `https://blog.qiaohaoyu.tech`
 - [x] `public/robots.txt` 的 Sitemap URL 已设置为 `.tech` 域名
+- [x] 默认 OG 分享图（`public/og-default.png`，1200 x 630）
+- [x] 首页 `WebSite` 与文章页 `BlogPosting` JSON-LD
+- [x] 文章 Open Graph 发布时间、更新时间、作者与标签 metadata
+- [x] 404 页面 `noindex, follow`
+- [x] 内容 schema 拒绝空 `heroImage` 和无效 `canonicalURL`
 - [ ] 初始化 Git 仓库并推送到 GitHub
 - [ ] 在 Cloudflare Pages 创建项目并连接 Git 仓库
 - [ ] 配置构建设置（pnpm build、dist、`NODE_VERSION=20`）

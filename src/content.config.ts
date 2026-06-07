@@ -30,10 +30,10 @@ const blog = defineCollection({
     series: z.string().optional(),
 
     /** Cover image path relative to /public — used in OG and hero */
-    heroImage: z.string().optional(),
+    heroImage: z.string().min(1).optional(),
 
     /** Explicit canonical URL — overrides the auto-generated one */
-    canonicalURL: z.string().optional(),
+    canonicalURL: z.url().optional(),
 
     /** Whether to render the table of contents on the article page */
     toc: z.boolean().default(true),

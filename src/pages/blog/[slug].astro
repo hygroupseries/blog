@@ -58,6 +58,7 @@ const { prev, next } = await getAdjacentPosts(post);
   prev={prev}
   next={next}
   body={post.body ?? ''}
+  lang={post.data.lang}
 >
   <Content />
 </PostLayout>

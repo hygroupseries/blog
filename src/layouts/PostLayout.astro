@@ -36,6 +36,7 @@ import BaseLayout from './BaseLayout.astro';
 import TOC from '../components/blog/TOC.astro';
 import TagList from '../components/blog/TagList.astro';
 import CommentSection from '../components/blog/CommentSection.astro';
+import { SITE } from '../consts/site';
 import { formatDate, toISODate } from '../utils/date';
 import { getReadingTime } from '../utils/reading-time';
 import type { CollectionEntry } from 'astro:content';
@@ -59,6 +60,7 @@ interface Props {
   prev?: CollectionEntry<'blog'>;
   next?: CollectionEntry<'blog'>;
   body: string;
+  lang?: string;
 }
 
 const {
@@ -74,9 +76,41 @@ const {
   prev,
   next,
   body,
+  lang = SITE.locale,
 } = Astro.props;
 
 const readingTime = getReadingTime(body);
+const siteBase = Astro.site?.toString().replace(/\/$/, '') ?? SITE.url;
+const articleURL = canonicalURL?.trim()
+  ? new URL(canonicalURL).toString()
+  : new URL(Astro.url.pathname, siteBase).toString();
+const articleImage = new URL(heroImage?.trim() || '/og-default.png', siteBase).toString();
+const articleStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  url: articleURL,
+  image: [articleImage],
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': articleURL,
+  },
+  author: {
+    '@type': 'Person',
+    name: SITE.author,
+    url: SITE.github || SITE.url,
+  },
+  publisher: {
+    '@type': 'Person',
+    name: SITE.author,
+    url: SITE.url,
+  },
+  keywords: tags,
+  inLanguage: lang,
+};
 
 // Show "updated" notice only when the update is on a different calendar day
 const showUpdated =
@@ -90,6 +124,11 @@ const showUpdated =
   image={heroImage}
   canonical={canonicalURL}
   article={true}
+  articlePublishedTime={pubDate}
+  articleModifiedTime={updatedDate ?? pubDate}
+  articleTags={tags}
+  lang={lang}
+  structuredData={articleStructuredData}
 >
   <div class="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
 
